@@ -1,63 +1,71 @@
 # FacultyTime
 
-Desktop helper for faculty to **suggest office-hour time windows** that fit the most students, using each student’s **busy** (in-class) blocks from a CSV. The graphical interface uses **Tkinter**, and slot ranking uses a **Decision Tree machine learning model**.
+A desktop app that suggests the best office-hour time slots for faculty, based on when students are free.
 
-## What it does
+## How to Run It
 
-1. You load a CSV where each row is one busy interval: which student, which weekday, start time, end time.
-2. You choose how long each office-hour block should be (for example 60 minutes), how finely to step the search (for example every 30 minutes), and the daily time window (for example 09:00–17:00).
-3. The app lists the **top candidate slots** ranked by how many students are **free** for the entire block (not in class).
+1. navigate to the google drive and install the zip file: https://drive.google.com/drive/folders/1Fb26HV6eYUKyoSW334qX99uQ-sPA2lR5?usp=sharing
+2. run the 'facultytime.exe'
 
-This is a **suggestion** tool: you still pick what works for you.
 
-## Requirements
+## How to Use the App
 
-- Python **3.10+** (includes Tkinter on most official Windows/macOS installers; on some Linux distributions install the `python3-tk` package).
-- `scikit-learn` (installed automatically when using `pip install -e ".[dev]"` or `pip install .`).
+### Step 1 — Load your student schedule file
 
-## Run from source (developers)
+Click **Open CSV** and select a CSV file containing your students' busy times (when they are in class).
 
-From this folder:
+The CSV must have these four columns:
 
-```text
+| Column    | What it means                              | Example      |
+|-----------|--------------------------------------------|--------------|
+| `student` | Student name or ID                         | `jsmith`     |
+| `weekday` | Day of the week                            | `Monday`     |
+| `start`   | When the busy block starts (24-hour time)  | `09:00`      |
+| `end`     | When the busy block ends (24-hour time)    | `10:15`      |
+
+See the `examples/` folder for a sample file.
+
+### Step 2 — Set your preferences
+
+| Setting      | What it controls                                        | Default   |
+|--------------|---------------------------------------------------------|-----------|
+| Slot length  | How long each office-hour block should be               | 60 min    |
+| Search step  | How finely to scan for slots                            | 30 min    |
+| Day window   | The earliest and latest time to consider               | 09:00–17:00 |
+| Show top     | How many results to display                             | 25        |
+
+### Step 3 — Click "Suggest office hours"
+
+The app will rank every possible time slot by how many students are free for the full block. The slot where the most students are available appears at the top.
+
+This is a **suggestion tool** — you choose what works best for you.
+
+---
+
+## For Developers
+
+To run from source:
+
+```
 pip install -e ".[dev]"
 python -m facultytime
 ```
 
-Or, without installing the package:
+To run tests:
 
-```text
-pip install pytest
-set PYTHONPATH=src
-python -m facultytime
 ```
-
-(On PowerShell, use `$env:PYTHONPATH = "src"` instead of `set`.)
-
-## Tests
-
-```text
-pip install -e ".[dev]"
 pytest
 ```
 
-## CSV format
+To build the Windows executable:
 
-UTF-8 file with a header row:
+```
+pip install pyinstaller
+python build_windows.py
+```
 
-| Column   | Meaning                                      |
-|----------|----------------------------------------------|
-| `student`| Student id or name (string)                  |
-| `weekday`| `Monday`–`Friday` or short forms like `Mon`  |
-| `start`  | Busy start, 24-hour `HH:MM`                  |
-| `end`    | Busy end, 24-hour `HH:MM`                    |
-
-Example: `examples/sample_busy.csv`.
-
-## End users (no command line)
-
-For the course requirement of a desktop app that does not rely on end users using a terminal, **bundle** the app (for example with [PyInstaller](https://pyinstaller.org/)) into a single-folder or one-file executable. Build instructions are environment-specific; after bundling, users double-click the executable.
+---
 
 ## License
 
-MIT (see `pyproject.toml`).
+MIT
